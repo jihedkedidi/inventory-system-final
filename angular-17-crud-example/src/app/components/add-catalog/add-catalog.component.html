@@ -1,0 +1,118 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a routerLink="/catalogs" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Add New Catalog
+  </h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div *ngIf="!submitted">
+            <form (ngSubmit)="saveCatalog()" #catalogForm="ngForm">
+              <!-- Catalog Name -->
+              <div class="mb-3">
+                <label for="catalogName" class="form-label">Catalog Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="catalogName"
+                  required
+                  [(ngModel)]="catalog.catalog_name"
+                  name="catalog_name"
+                  #name="ngModel"
+                  placeholder="Enter catalog name"
+                />
+                <div class="text-danger mt-1" *ngIf="name.invalid && name.touched">
+                  Catalog name is required.
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  [(ngModel)]="catalog.description"
+                  name="description"
+                  rows="4"
+                  placeholder="Enter catalog description"
+                ></textarea>
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-4 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isActive"
+                  [(ngModel)]="catalog.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="isActive">Active</label>
+              </div>
+
+              <!-- Alert for errors -->
+              <div *ngIf="error" class="alert alert-danger" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-secondary me-md-2" routerLink="/catalogs">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="catalogForm.invalid || loading"
+                >
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Success message -->
+          <div *ngIf="submitted">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ success }}
+            </div>
+            <div class="text-center mt-4">
+              <button class="btn btn-primary me-2" (click)="newCatalog()">
+                Add Another Catalog
+              </button>
+              <button class="btn btn-outline-primary" routerLink="/catalogs">
+                Go to Catalogs List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help and information panel -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Creating a Catalog</h5>
+        </div>
+        <div class="card-body">
+          <p>A catalog is a collection of products grouped together for organizational or presentation purposes.</p>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Catalog name</strong> should be descriptive and clear.</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Description</strong> helps users understand the catalog's purpose.</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Active status</strong> determines if the catalog is visible to users.</li>
+          </ul>
+          <p>After creating a catalog, you'll be able to add products to it from the catalog details page.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

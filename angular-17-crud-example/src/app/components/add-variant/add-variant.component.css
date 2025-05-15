@@ -1,0 +1,59 @@
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+  border-color: #4B79A1;
+  box-shadow: 0 0 0 0.25rem rgba(75, 121, 161, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: #4B79A1;
+  border-color: #4B79A1;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 1rem 1.5rem;
+}
+
+.card-title {
+  margin-bottom: 0;
+  color: #283E51;
+}
+
+textarea {
+  resize: none;
+}
+
+.fa-arrow-left {
+  transition: transform 0.3s;
+}
+
+a:hover .fa-arrow-left {
+  transform: translateX(-5px);
+}
+
+.form-text {
+  color: #6c757d;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  opacity: 1;
+}

@@ -1,0 +1,353 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a [routerLink]="currentVariant.product_id ? ['/variants', 'product', currentVariant.product_id] : ['/variants']" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Variant Details
+    <span *ngIf="product" class="text-muted fs-5 ms-2">for {{ product.product_name }}</span>
+  </h1>
+
+  <!-- Alert for errors -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+  </div>
+
+  <!-- Alert for success -->
+  <div *ngIf="success" class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close float-end" (click)="success = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading variant details...</p>
+  </div>
+
+  <!-- Main content -->
+  <div *ngIf="!loading && currentVariant.variant_id" class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Variant Information</h5>
+          <div>
+            <button 
+              *ngIf="!isEditing" 
+              class="btn btn-sm btn-outline-primary me-2" 
+              (click)="toggleEdit()">
+              <i class="fas fa-edit me-1"></i> Edit
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-primary me-2" 
+              (click)="updateVariant()">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Save
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-outline-secondary" 
+              (click)="toggleEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- View Mode -->
+          <div *ngIf="!isEditing">
+            <div class="row mb-4">
+              <div class="col-md-7">
+                <div class="d-flex align-items-center">
+                  <h4 class="mb-1">{{ currentVariant.variant_name }}: {{ currentVariant.variant_value }}</h4>
+                  <span class="badge rounded-pill ms-3" [ngClass]="{'bg-success': currentVariant.is_active, 'bg-secondary': !currentVariant.is_active}">
+                    {{ currentVariant.is_active ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+                <div *ngIf="product" class="text-muted">
+                  Product: {{ product.product_name }}
+                </div>
+              </div>
+              <div class="col-md-5 text-end">
+                <span class="badge bg-light text-dark p-2 fs-6">SKU: {{ currentVariant.sku }}</span>
+                <div *ngIf="currentVariant.barcode" class="mt-2 text-muted">
+                  Barcode: {{ currentVariant.barcode }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <div class="card h-100 bg-light border-0">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Price</h6>
+                    <div class="display-6">{{ currentVariant.price | currency }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100 bg-light border-0">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Cost Price</h6>
+                    <div class="display-6">{{ currentVariant.cost_price | currency }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card h-100 bg-light border-0">
+                  <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Profit Margin</h6>
+                    <div class="display-6 text-success">{{ getProfitMargin() | number:'1.1-1' }}%</div>
+                    <small class="text-muted">{{ getProfit() | currency }} per unit</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold">Created At</h6>
+                <p>{{ currentVariant.created_at | date:'medium' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold">Last Updated</h6>
+                <p>{{ currentVariant.updated_at | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div *ngIf="isEditing">
+            <form #editForm="ngForm">
+              <!-- Product info (non-editable) -->
+              <div class="mb-3" *ngIf="product">
+                <label class="form-label">Product</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [value]="product.product_name"
+                  disabled
+                />
+                <small class="text-muted">Product association cannot be changed</small>
+              </div>
+
+              <!-- Variant Name -->
+              <div class="mb-3">
+                <label for="editVariantName" class="form-label">Variant Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editVariantName"
+                  required
+                  [(ngModel)]="currentVariant.variant_name"
+                  name="variant_name"
+                  #editName="ngModel"
+                  maxlength="100"
+                />
+                <div class="text-danger mt-1" *ngIf="editName.invalid && editName.touched">
+                  <div *ngIf="editName.errors?.['required']">Variant name is required.</div>
+                  <div *ngIf="editName.errors?.['maxlength']">Name cannot exceed 100 characters.</div>
+                </div>
+              </div>
+
+              <!-- Variant Value -->
+              <div class="mb-3">
+                <label for="editVariantValue" class="form-label">Variant Value <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editVariantValue"
+                  required
+                  [(ngModel)]="currentVariant.variant_value"
+                  name="variant_value"
+                  #editValue="ngModel"
+                  maxlength="100"
+                />
+                <div class="text-danger mt-1" *ngIf="editValue.invalid && editValue.touched">
+                  <div *ngIf="editValue.errors?.['required']">Variant value is required.</div>
+                  <div *ngIf="editValue.errors?.['maxlength']">Value cannot exceed 100 characters.</div>
+                </div>
+              </div>
+
+              <!-- SKU -->
+              <div class="mb-3">
+                <label for="editSku" class="form-label">SKU <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editSku"
+                  required
+                  [(ngModel)]="currentVariant.sku"
+                  name="sku"
+                  #editSku="ngModel"
+                  pattern="^[a-zA-Z0-9_-]+$"
+                  maxlength="50"
+                />
+                <div class="text-danger mt-1" *ngIf="editSku.invalid && editSku.touched">
+                  <div *ngIf="editSku.errors?.['required']">SKU is required.</div>
+                  <div *ngIf="editSku.errors?.['pattern']">SKU can only contain letters, numbers, hyphens and underscores.</div>
+                  <div *ngIf="editSku.errors?.['maxlength']">SKU cannot exceed 50 characters.</div>
+                </div>
+                <small class="form-text text-muted">
+                  The SKU must be unique for this variant. If you change it, make sure it's not already in use.
+                </small>
+              </div>
+
+              <div class="row">
+                <!-- Price -->
+                <div class="col-md-6 mb-3">
+                  <label for="editPrice" class="form-label">Price <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="editPrice"
+                      required
+                      [(ngModel)]="currentVariant.price"
+                      name="price"
+                      #editPrice="ngModel"
+                      min="0"
+                      step="0.01"
+                      max="999999.99"
+                    />
+                  </div>
+                  <div class="text-danger mt-1" *ngIf="editPrice.invalid && editPrice.touched">
+                    <div *ngIf="editPrice.errors?.['required']">Price is required.</div>
+                    <div *ngIf="editPrice.errors?.['min']">Price cannot be negative.</div>
+                    <div *ngIf="editPrice.errors?.['max']">Price is too high.</div>
+                  </div>
+                </div>
+
+                <!-- Cost Price -->
+                <div class="col-md-6 mb-3">
+                  <label for="editCostPrice" class="form-label">Cost Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="editCostPrice"
+                      [(ngModel)]="currentVariant.cost_price"
+                      name="cost_price"
+                      min="0"
+                      step="0.01"
+                      max="999999.99"
+                      #editCostPrice="ngModel"
+                    />
+                  </div>
+                  <div class="text-danger mt-1" *ngIf="editCostPrice.invalid && editCostPrice.touched">
+                    <div *ngIf="editCostPrice.errors?.['min']">Cost price cannot be negative.</div>
+                    <div *ngIf="editCostPrice.errors?.['max']">Cost price is too high.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barcode -->
+              <div class="mb-3">
+                <label for="editBarcode" class="form-label">Barcode</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editBarcode"
+                  [(ngModel)]="currentVariant.barcode"
+                  name="barcode"
+                  #editBarcode="ngModel"
+                  maxlength="100"
+                />
+                <div class="text-danger mt-1" *ngIf="editBarcode.invalid && editBarcode.touched">
+                  <div *ngIf="editBarcode.errors?.['maxlength']">Barcode cannot exceed 100 characters.</div>
+                </div>
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="editIsActive"
+                  [(ngModel)]="currentVariant.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="editIsActive">Active</label>
+              </div>
+
+              <!-- Alert for errors -->
+              <div *ngIf="error" class="alert alert-danger mb-3" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ error }}
+                <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+              </div>
+
+              <!-- Form buttons -->
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary me-md-2" 
+                  (click)="toggleEdit()">
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="editForm.invalid || loading"
+                  (click)="updateVariant()">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Side panel -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-cog me-2"></i>Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a [routerLink]="currentVariant.product_id ? ['/variants', 'product', currentVariant.product_id] : ['/variants']" class="btn btn-outline-primary">
+              <i class="fas fa-list me-2"></i>Back to Variants List
+            </a>
+            <button class="btn btn-danger" (click)="deleteVariant()">
+              <i class="fas fa-trash me-2"></i>Delete Variant
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Info Card (if product exists) -->
+      <div *ngIf="product" class="card">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-box me-2"></i>Product Information</h5>
+        </div>
+        <div class="card-body">
+          <h6>{{ product.product_name }}</h6>
+          <p class="text-muted small mb-2">SKU: {{ product.sku }}</p>
+          <p class="mb-3">{{ product.description | slice:0:100 }}{{ product.description && product.description.length > 100 ? '...' : '' }}</p>
+          <a [routerLink]="['/products', product.id]" class="btn btn-sm btn-outline-primary">
+            View Product Details
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not found message -->
+  <div *ngIf="!loading && !currentVariant.variant_id && !error" class="text-center my-5">
+    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+    <h3>Variant Not Found</h3>
+    <p class="text-muted">The variant you are looking for does not exist or has been removed.</p>
+    <a routerLink="/variants" class="btn btn-primary mt-3">
+      <i class="fas fa-arrow-left me-2"></i>Back to Variants List
+    </a>
+  </div>
+</div>

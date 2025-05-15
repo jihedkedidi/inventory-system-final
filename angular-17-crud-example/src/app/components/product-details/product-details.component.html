@@ -1,0 +1,212 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a routerLink="/products" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Product Details
+  </h1>
+
+  <!-- Alert for errors -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+  </div>
+
+  <!-- Alert for success -->
+  <div *ngIf="success" class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close float-end" (click)="success = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading product details...</p>
+  </div>
+
+  <div *ngIf="!loading && currentProduct.id" class="row">
+    <!-- Main content -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Product Information</h5>
+          <div>
+            <button 
+              *ngIf="!isEditing" 
+              class="btn btn-sm btn-outline-primary me-2" 
+              (click)="toggleEdit()">
+              <i class="fas fa-edit me-1"></i> Edit
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-primary me-2" 
+              (click)="updateProduct()">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Save
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-outline-secondary" 
+              (click)="toggleEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- View Mode -->
+          <div *ngIf="!isEditing">
+            <div class="row mb-4">
+              <div class="col-md-8">
+                <h4>{{ currentProduct.product_name }}</h4>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success': currentProduct.is_active, 'bg-secondary': !currentProduct.is_active}">
+                  {{ currentProduct.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <div class="col-md-4 text-end">
+                <span class="badge bg-light text-dark p-2 fs-6">SKU: {{ currentProduct.sku }}</span>
+              </div>
+            </div>
+
+            <h6 class="fw-bold">Description</h6>
+            <p class="mb-4">{{ currentProduct.description }}</p>
+
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <h6 class="fw-bold">Unit of Measure</h6>
+                <p>{{ currentProduct.unit_of_measure }}</p>
+              </div>
+            </div>
+
+            <div class="row mb-3" *ngIf="currentProduct.created_at || currentProduct.updated_at">
+              <div class="col-md-6" *ngIf="currentProduct.created_at">
+                <h6 class="fw-bold">Created At</h6>
+                <p>{{ currentProduct.created_at | date:'medium' }}</p>
+              </div>
+              <div class="col-md-6" *ngIf="currentProduct.updated_at">
+                <h6 class="fw-bold">Last Updated</h6>
+                <p>{{ currentProduct.updated_at | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div *ngIf="isEditing">
+            <form #editForm="ngForm">
+              <!-- Product Name -->
+              <div class="mb-3">
+                <label for="editProductName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editProductName"
+                  required
+                  [(ngModel)]="currentProduct.product_name"
+                  name="product_name"
+                  #editName="ngModel"
+                />
+                <div class="text-danger mt-1" *ngIf="editName.invalid && editName.touched">
+                  Product name is required.
+                </div>
+              </div>
+
+              <!-- SKU -->
+              <div class="mb-3">
+                <label for="editSku" class="form-label">SKU <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editSku"
+                  required
+                  [(ngModel)]="currentProduct.sku"
+                  name="sku"
+                  #editSku="ngModel"
+                />
+                <div class="text-danger mt-1" *ngIf="editSku.invalid && editSku.touched">
+                  SKU is required.
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="editDescription" class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea
+                  class="form-control"
+                  id="editDescription"
+                  required
+                  [(ngModel)]="currentProduct.description"
+                  name="description"
+                  #editDescription="ngModel"
+                  rows="4"
+                ></textarea>
+                <div class="text-danger mt-1" *ngIf="editDescription.invalid && editDescription.touched">
+                  Description is required.
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Unit of Measure -->
+                <div class="col-md-6 mb-3">
+                  <label for="editUnitOfMeasure" class="form-label">Unit of Measure <span class="text-danger">*</span></label>
+                  <select
+                    class="form-select"
+                    id="editUnitOfMeasure"
+                    required
+                    [(ngModel)]="currentProduct.unit_of_measure"
+                    name="unit_of_measure"
+                    #editUnitOfMeasure="ngModel"
+                  >
+                    <option value="piece">Piece</option>
+                    <option value="kg">Kilogram (kg)</option>
+                    <option value="g">Gram (g)</option>
+                    <option value="l">Liter (l)</option>
+                    <option value="ml">Milliliter (ml)</option>
+                    <option value="set">Set</option>
+                    <option value="pair">Pair</option>
+                  </select>
+                  <div class="text-danger mt-1" *ngIf="editUnitOfMeasure.invalid && editUnitOfMeasure.touched">
+                    Unit of measure is required.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="editIsActive"
+                  [(ngModel)]="currentProduct.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="editIsActive">Active</label>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar / Actions -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-cog me-2"></i>Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a routerLink="/products" class="btn btn-outline-primary">
+              <i class="fas fa-list me-2"></i>Back to Products List
+            </a>
+            <button class="btn btn-danger" (click)="deleteProduct()">
+              <i class="fas fa-trash me-2"></i>Delete Product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,116 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.sidebar {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #4B79A1, #283E51);
+  color: white;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.sidebar .nav-link {
+  color: rgba(255,255,255,0.85);
+  border-radius: 0;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar .nav-link:hover {
+  background-color: rgba(255,255,255,0.1);
+  color: white;
+  transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+  background-color: rgba(255,255,255,0.2);
+  color: white;
+  font-weight: 500;
+}
+
+.sidebar .nav-link i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.page-heading {
+  border-bottom: 2px solid #4B79A1;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #283E51;
+}
+
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.btn-primary {
+  background-color: #4B79A1;
+  border-color: #4B79A1;
+}
+
+.btn-primary:hover {
+  background-color: #3d6382;
+  border-color: #3d6382;
+}
+
+.table {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 5px;
+  transition: all 0.3s;
+}
+
+.btn-action:hover {
+  transform: scale(1.1);
+}
+
+.icon-edit {
+  color: #ffc107;
+}
+
+.icon-delete {
+  color: #dc3545;
+}
+
+.form-control:focus {
+  border-color: #4B79A1;
+  box-shadow: 0 0 0 0.25rem rgba(75, 121, 161, 0.25);
+}
+
+.page-container {
+  padding: 20px;
+}
+
+/* Animation for fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}

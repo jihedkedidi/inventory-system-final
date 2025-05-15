@@ -1,0 +1,175 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a routerLink="/products" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Add New Product
+  </h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div *ngIf="!submitted">
+            <form (ngSubmit)="saveProduct()" #productForm="ngForm">
+              <!-- Product Name -->
+              <div class="mb-3">
+                <label for="productName" class="form-label">Product Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="productName"
+                  required
+                  [(ngModel)]="product.product_name"
+                  name="product_name"
+                  #name="ngModel"
+                  placeholder="Enter product name"
+                />
+                <div class="text-danger mt-1" *ngIf="name.invalid && name.touched">
+                  Product name is required.
+                </div>
+              </div>
+
+              <!-- SKU -->
+              <div class="mb-3">
+                <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sku"
+                  required
+                  [(ngModel)]="product.sku"
+                  name="sku"
+                  #sku="ngModel"
+                  placeholder="Enter stock keeping unit"
+                  pattern="[a-zA-Z0-9_-]+"
+                />
+                <div class="text-danger mt-1" *ngIf="sku.invalid && sku.touched">
+                  <span *ngIf="sku.errors?.['required']">SKU is required.</span>
+                  <span *ngIf="sku.errors?.['pattern']">SKU can only contain letters, numbers, hyphens and underscores.</span>
+                </div>
+                <small class="form-text text-muted">
+                  The SKU must be unique and contain only letters, numbers, hyphens and underscores.
+                </small>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  required
+                  [(ngModel)]="product.description"
+                  name="description"
+                  #description="ngModel"
+                  rows="4"
+                  placeholder="Enter product description"
+                ></textarea>
+                <div class="text-danger mt-1" *ngIf="description.invalid && description.touched">
+                  Description is required.
+                </div>
+              </div>
+
+              <!-- Unit of Measure -->
+              <div class="mb-3">
+                <label for="unitOfMeasure" class="form-label">Unit of Measure <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  id="unitOfMeasure"
+                  required
+                  [(ngModel)]="product.unit_of_measure"
+                  name="unit_of_measure"
+                  #unitOfMeasure="ngModel"
+                >
+                  <option value="piece">Piece</option>
+                  <option value="kg">Kilogram (kg)</option>
+                  <option value="g">Gram (g)</option>
+                  <option value="l">Liter (l)</option>
+                  <option value="ml">Milliliter (ml)</option>
+                  <option value="set">Set</option>
+                  <option value="pair">Pair</option>
+                </select>
+                <div class="text-danger mt-1" *ngIf="unitOfMeasure.invalid && unitOfMeasure.touched">
+                  Unit of measure is required.
+                </div>
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-4 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isActive"
+                  [(ngModel)]="product.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="isActive">Active</label>
+              </div>
+
+              <!-- Alert for errors -->
+              <div *ngIf="error" class="alert alert-danger" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-secondary me-md-2" routerLink="/products">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="productForm.invalid || loading"
+                >
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Success message -->
+          <div *ngIf="submitted">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ success }}
+            </div>
+            <div class="text-center mt-4">
+              <button class="btn btn-primary me-2" (click)="newProduct()">
+                Add Another Product
+              </button>
+              <button class="btn btn-outline-primary" routerLink="/products">
+                Go to Products List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help panel -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Help Information</h5>
+        </div>
+        <div class="card-body">
+          <h6>Required Fields</h6>
+          <ul>
+            <li><strong>Product Name:</strong> A descriptive name for the product</li>
+            <li><strong>SKU:</strong> Stock Keeping Unit - a unique identifier</li>
+            <li><strong>Description:</strong> Detailed information about the product</li>
+            <li><strong>Unit of Measure:</strong> How the product is measured/sold</li>
+          </ul>
+          
+          <h6>Optional Fields</h6>
+          <ul>
+            <li><strong>Active:</strong> Whether the product is active in the system</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

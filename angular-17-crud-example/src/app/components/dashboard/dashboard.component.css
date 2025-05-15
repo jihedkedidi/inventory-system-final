@@ -1,0 +1,29 @@
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+}
+
+.fa-3x {
+  transition: all 0.3s ease;
+}
+
+.card:hover .fa-3x {
+  transform: scale(1.2);
+}
+
+.progress {
+  height: 10px;
+  border-radius: 5px;
+}
+
+.list-group-item {
+  transition: background-color 0.3s;
+}
+
+.list-group-item:hover {
+  background-color: rgba(75, 121, 161, 0.05);
+} 

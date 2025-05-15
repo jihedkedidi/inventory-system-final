@@ -1,0 +1,55 @@
+.list-group-item {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.list-group-item:hover {
+  background-color: rgba(75, 121, 161, 0.05);
+}
+
+.list-group-item.active {
+  background-color: #4B79A1;
+  border-color: #4B79A1;
+}
+
+.badge {
+  font-weight: 500;
+}
+
+.btn-action {
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.table tr {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.table-active {
+  background-color: rgba(75, 121, 161, 0.1) !important;
+}
+
+.fa-3x {
+  opacity: 0.7;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+td {
+  vertical-align: middle;
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+} 

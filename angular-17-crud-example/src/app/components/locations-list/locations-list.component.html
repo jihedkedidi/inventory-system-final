@@ -1,0 +1,87 @@
+<div class="list row">
+  <div class="col-md-8">
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by location name"
+        [(ngModel)]="locationName"
+      />
+      <div class="input-group-append">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          (click)="searchByName()"
+        >
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-12 text-right mb-3">
+    <button class="btn btn-success" (click)="addNewLocation()">
+      Add Location
+    </button>
+  </div>
+
+  <div class="col-md-6">
+    <h4>Locations List</h4>
+    <div *ngIf="message" class="alert alert-danger">{{ message }}</div>
+    <ul class="list-group">
+      <li
+        class="list-group-item"
+        *ngFor="let location of locations; let i = index"
+        [class.active]="i == currentIndex"
+        (click)="setActiveLocation(location, i)"
+      >
+        {{ location.location_name }}
+      </li>
+    </ul>
+  </div>
+  
+  <div class="col-md-6">
+    <div *ngIf="currentLocation.location_id">
+      <h4>Location Details</h4>
+      <div>
+        <label><strong>Name:</strong></label> {{ currentLocation.location_name }}
+      </div>
+      <div>
+        <label><strong>Address:</strong></label> {{ currentLocation.address }}
+      </div>
+      <div>
+        <label><strong>City:</strong></label> {{ currentLocation.city }}
+      </div>
+      <div>
+        <label><strong>State/Province:</strong></label> {{ currentLocation.state }}
+      </div>
+      <div>
+        <label><strong>Country:</strong></label> {{ currentLocation.country }}
+      </div>
+      <div>
+        <label><strong>Postal Code:</strong></label> {{ currentLocation.postal_code }}
+      </div>
+      <div>
+        <label><strong>Contact Person:</strong></label> {{ currentLocation.contact_person }}
+      </div>
+      <div>
+        <label><strong>Contact Phone:</strong></label> {{ currentLocation.contact_phone }}
+      </div>
+      <div>
+        <label><strong>Contact Email:</strong></label> {{ currentLocation.contact_email }}
+      </div>
+      <div>
+        <label><strong>Status:</strong></label> {{ currentLocation.is_active ? 'Active' : 'Inactive' }}
+      </div>
+
+      <a class="btn btn-warning mt-3" routerLink="/locations/{{ currentLocation.location_id }}">
+        Edit
+      </a>
+    </div>
+
+    <div *ngIf="!currentLocation.location_id">
+      <br />
+      <p>Please click on a location...</p>
+    </div>
+  </div>
+</div> 

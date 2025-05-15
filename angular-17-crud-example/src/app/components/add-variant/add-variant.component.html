@@ -1,0 +1,224 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a [routerLink]="productId ? ['/variants', 'product', productId] : ['/variants']" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Add New Variant
+    <span *ngIf="product" class="text-muted fs-5 ms-2">for {{ product.product_name }}</span>
+  </h1>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div *ngIf="!submitted">
+            <form (ngSubmit)="saveVariant()" #variantForm="ngForm">
+              <!-- Product selection (only if not coming from a product page) -->
+              <div class="mb-3" *ngIf="!productId">
+                <label for="productSelect" class="form-label">Product <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  id="product"
+                  required
+                  [(ngModel)]="variant.product_id"
+                  name="product_id"
+                  #product="ngModel"
+                  (change)="onProductChange(variant.product_id!)"
+                >
+                  <option [ngValue]="undefined" disabled>-- Select Product --</option>
+                  <option *ngFor="let prod of products" [ngValue]="prod.id">
+                    {{ prod.product_name }}
+                  </option>
+                </select>
+                <div class="text-danger mt-1" *ngIf="product && product.invalid && product.touched">
+                  Product is required.
+                </div>
+              </div>
+
+              <!-- Variant Name -->
+              <div class="mb-3">
+                <label for="variantName" class="form-label">Variant Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="variantName"
+                  required
+                  [(ngModel)]="variant.variant_name"
+                  name="variant_name"
+                  #name="ngModel"
+                  placeholder="e.g. Size, Color, Material"
+                />
+                <div class="text-danger mt-1" *ngIf="name.invalid && name.touched">
+                  Variant name is required.
+                </div>
+              </div>
+
+              <!-- Variant Value -->
+              <div class="mb-3">
+                <label for="variantValue" class="form-label">Variant Value <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="variantValue"
+                  required
+                  [(ngModel)]="variant.variant_value"
+                  name="variant_value"
+                  #value="ngModel"
+                  placeholder="e.g. Large, Red, Cotton"
+                />
+                <div class="text-danger mt-1" *ngIf="value.invalid && value.touched">
+                  Variant value is required.
+                </div>
+              </div>
+
+              <!-- SKU -->
+              <div class="mb-3">
+                <label for="sku" class="form-label">SKU <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="sku"
+                  required
+                  [(ngModel)]="variant.sku"
+                  name="sku"
+                  #sku="ngModel"
+                  placeholder="Enter stock keeping unit"
+                />
+                <div class="text-danger mt-1" *ngIf="sku.invalid && sku.touched">
+                  SKU is required.
+                </div>
+                <small class="form-text text-muted">
+                  The SKU must be unique and should identify this specific variant.
+                </small>
+              </div>
+
+              <div class="row">
+                <!-- Price -->
+                <div class="col-md-6 mb-3">
+                  <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="price"
+                      required
+                      [(ngModel)]="variant.price"
+                      name="price"
+                      #price="ngModel"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div class="text-danger mt-1" *ngIf="price.invalid && price.touched">
+                    Valid price is required.
+                  </div>
+                </div>
+
+                <!-- Cost Price -->
+                <div class="col-md-6 mb-3">
+                  <label for="costPrice" class="form-label">Cost Price</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="costPrice"
+                      [(ngModel)]="variant.cost_price"
+                      name="cost_price"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barcode -->
+              <div class="mb-3">
+                <label for="barcode" class="form-label">Barcode</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="barcode"
+                  [(ngModel)]="variant.barcode"
+                  name="barcode"
+                  placeholder="Enter barcode (optional)"
+                />
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-4 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isActive"
+                  [(ngModel)]="variant.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="isActive">Active</label>
+              </div>
+
+              <!-- Alert for errors -->
+              <div *ngIf="error" class="alert alert-danger" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="button" class="btn btn-secondary me-md-2" 
+                  [routerLink]="productId ? ['/variants', 'product', productId] : ['/variants']">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  [disabled]="variantForm.invalid || loading"
+                >
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Success message -->
+          <div *ngIf="submitted">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ success }}
+            </div>
+            <div class="text-center mt-4">
+              <button class="btn btn-primary me-2" (click)="newVariant()">
+                Add Another Variant
+              </button>
+              <button class="btn btn-outline-primary" 
+                [routerLink]="productId ? ['/variants', 'product', productId] : ['/variants']">
+                Go to Variants List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help and information panel -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Creating a Variant</h5>
+        </div>
+        <div class="card-body">
+          <p>A variant represents a specific variation of a product (e.g., size, color, material).</p>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Variant name</strong> is the type of variation (e.g., Size, Color).</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Variant value</strong> is the specific attribute (e.g., Large, Red).</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>SKU</strong> must be unique for inventory tracking.</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Price</strong> is what the customer pays.</li>
+            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> <strong>Cost price</strong> is what you pay to acquire or produce the item.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

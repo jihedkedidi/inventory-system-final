@@ -1,0 +1,36 @@
+.table tr {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.table-active {
+  background-color: rgba(75, 121, 161, 0.1) !important;
+}
+
+.btn-action {
+  opacity: 0.8;
+  transition: all 0.2s;
+}
+
+.btn-action:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.badge {
+  font-weight: 500;
+}
+
+.fa-3x {
+  opacity: 0.7;
+}
+
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+td {
+  vertical-align: middle;
+}
+

@@ -1,0 +1,33 @@
+services:
+  postgres: 
+    image: postgres 
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres 
+    container_name: postgres 
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data 
+    ports:
+      - '5433:5432' 
+    networks:
+      - inventory_network
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: inventory_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@inventory.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - inventory_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  inventory_network:
+    driver: bridge 

@@ -1,0 +1,240 @@
+<div class="container-fluid animate-fade-in">
+  <h1 class="page-heading mb-4">
+    <a routerLink="/catalogs" class="text-decoration-none me-3">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    Catalog Details
+  </h1>
+
+  <!-- Alert for errors -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+  </div>
+
+  <!-- Alert for success -->
+  <div *ngIf="success" class="alert alert-success" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    {{ success }}
+    <button type="button" class="btn-close float-end" (click)="success = ''"></button>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading catalog details...</p>
+  </div>
+
+  <div *ngIf="!loading && currentCatalog.catalog_id" class="row">
+    <!-- Main content -->
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Catalog Information</h5>
+          <div>
+            <button 
+              *ngIf="!isEditing" 
+              class="btn btn-sm btn-outline-primary me-2" 
+              (click)="toggleEdit()">
+              <i class="fas fa-edit me-1"></i> Edit
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-primary me-2" 
+              (click)="updateCatalog()">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              Save
+            </button>
+            <button 
+              *ngIf="isEditing" 
+              class="btn btn-sm btn-outline-secondary" 
+              (click)="toggleEdit()">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- View Mode -->
+          <div *ngIf="!isEditing">
+            <div class="row mb-4">
+              <div class="col-md-8">
+                <h4>{{ currentCatalog.catalog_name }}</h4>
+                <span class="badge rounded-pill" [ngClass]="{'bg-success': currentCatalog.is_active, 'bg-secondary': !currentCatalog.is_active}">
+                  {{ currentCatalog.is_active ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+
+            <h6 class="fw-bold">Description</h6>
+            <p class="mb-4">{{ currentCatalog.description || 'No description available' }}</p>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <h6 class="fw-bold">Created At</h6>
+                <p>{{ currentCatalog.created_at | date:'medium' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold">Last Updated</h6>
+                <p>{{ currentCatalog.updated_at | date:'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Mode -->
+          <div *ngIf="isEditing">
+            <form #editForm="ngForm">
+              <!-- Catalog Name -->
+              <div class="mb-3">
+                <label for="editCatalogName" class="form-label">Catalog Name <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="editCatalogName"
+                  required
+                  [(ngModel)]="currentCatalog.catalog_name"
+                  name="catalog_name"
+                  #editName="ngModel"
+                />
+                <div class="text-danger mt-1" *ngIf="editName.invalid && editName.touched">
+                  Catalog name is required.
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="editDescription" class="form-label">Description</label>
+                <textarea
+                  class="form-control"
+                  id="editDescription"
+                  [(ngModel)]="currentCatalog.description"
+                  name="description"
+                  rows="4"
+                ></textarea>
+              </div>
+
+              <!-- Is Active -->
+              <div class="mb-3 form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="editIsActive"
+                  [(ngModel)]="currentCatalog.is_active"
+                  name="is_active"
+                />
+                <label class="form-check-label" for="editIsActive">Active</label>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products in Catalog -->
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0">Products in Catalog</h5>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="productLoading" class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2">Loading products...</span>
+          </div>
+
+          <div *ngIf="!productLoading && (!currentCatalog.products || currentCatalog.products.length === 0)" class="text-center py-4">
+            <i class="fas fa-box-open text-muted mb-2"></i>
+            <p>No products in this catalog yet.</p>
+          </div>
+
+          <ul *ngIf="!productLoading && currentCatalog.products && currentCatalog.products.length > 0" class="list-group list-group-flush">
+            <li *ngFor="let product of currentCatalog.products" class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <span class="fw-medium">{{ product.product_name }}</span>
+                <span class="badge bg-light text-dark ms-2">{{ product.sku }}</span>
+              </div>
+              <button class="btn btn-sm btn-outline-danger" (click)="removeProductFromCatalog(product.id)">
+                <i class="fas fa-times me-1"></i> Remove
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar / Actions -->
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-cog me-2"></i>Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a routerLink="/catalogs" class="btn btn-outline-primary">
+              <i class="fas fa-list me-2"></i>Back to Catalogs List
+            </a>
+            <button class="btn btn-danger" (click)="deleteCatalog()">
+              <i class="fas fa-trash me-2"></i>Delete Catalog
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Products to Catalog -->
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>Add Products</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="productLoading" class="text-center py-3">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2">Loading products...</span>
+          </div>
+
+          <div *ngIf="!productLoading && availableProducts.length === 0" class="text-center py-3">
+            <p class="text-muted mb-0">All products are already in this catalog.</p>
+          </div>
+
+          <div *ngIf="!productLoading && availableProducts.length > 0">
+            <p class="mb-3">Select products to add to this catalog:</p>
+            
+            <div class="available-products">
+              <div *ngFor="let product of availableProducts" class="form-check mb-2">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input" 
+                  [id]="'product-' + product.id"
+                  [checked]="isProductSelected(product.id)"
+                  (change)="toggleProductSelection(product.id)"
+                />
+                <label class="form-check-label" [for]="'product-' + product.id">
+                  {{ product.product_name }}
+                  <span class="badge bg-light text-dark ms-1">{{ product.sku }}</span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="mt-3">
+              <button 
+                class="btn btn-primary w-100" 
+                [disabled]="selectedProductIds.length === 0"
+                (click)="addProductsToCatalog()">
+                Add Selected Products
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not found message -->
+  <div *ngIf="!loading && !currentCatalog.catalog_id && !error" class="text-center my-5">
+    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+    <h3>Catalog Not Found</h3>
+    <p class="text-muted">The catalog you are looking for does not exist or has been removed.</p>
+    <a routerLink="/catalogs" class="btn btn-primary mt-3">
+      <i class="fas fa-arrow-left me-2"></i>Back to Catalogs List
+    </a>
+  </div>
+</div>
