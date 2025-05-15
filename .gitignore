@@ -1,0 +1,77 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Angular specific
+/angular-17-crud-example/dist/
+/angular-17-crud-example/.angular/cache
+/angular-17-crud-example/.sass-cache
+/angular-17-crud-example/connect.lock
+/angular-17-crud-example/coverage/
+/angular-17-crud-example/libpeerconnection.log
+/angular-17-crud-example/typings/
+
+# NestJS specific
+/backend/dist/
+/backend/node_modules/
+
+# ML Service
+/ml-service/__pycache__/
+/ml-service/venv/
+/ml-service/.env
+/ml-service/*.pyc
+/ml-service/*.pyo
+/ml-service/*.pyd
+/ml-service/.Python
+/ml-service/env/
+/ml-service/build/
+/ml-service/develop-eggs/
+/ml-service/dist/
+/ml-service/downloads/
+/ml-service/eggs/
+/ml-service/.eggs/
+/ml-service/lib/
+/ml-service/lib64/
+/ml-service/parts/
+/ml-service/sdist/
+/ml-service/var/
+/ml-service/*.egg-info/
+/ml-service/.installed.cfg
+/ml-service/*.egg
+
+# Development notes
+/dev-notes/
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# IDE - JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+.idea_modules/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log 
